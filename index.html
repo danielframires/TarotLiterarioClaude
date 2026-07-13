@@ -622,16 +622,16 @@
       "O convite foi um erro",
     ],
     genres: [
-      { name: "Comédia",    	sub: "deixe a risada ser a arma" },
-      { name: "Tragédia",	sub: "a beleza encontrada na ruína" },
-      { name: "Distopia",  	sub: "um mundo virado do avesso" },
-      { name: "Romance",   	sub: "o mais antigo jogo de risco" },
-      { name: "Mistério",   	sub: "a verdade escondida diante dos olhos" },
-      { name: "Horror",    	sub: "o medo como espelho" },
-      { name: "Fábula",     	sub: "a lição disfarçada de história" },
-      { name: "Suspense",  	sub: "cada segundo conta" },
-      { name: "Sátira",    	sub: "a forma mais afiada da verdade" },
-      { name: "Épico",      	sub: "o mundo em jogo" },
+      { name: "Comédia",    	sub: "deixe a risada ser a arma",		article: "uma" },
+      { name: "Tragédia",	sub: "a beleza encontrada na ruína"		article: "uma" },
+      { name: "Distopia",  	sub: "um mundo virado do avesso"		article: "uma" },
+      { name: "Romance",   	sub: "o mais antigo jogo de risco"		article: "um" },
+      { name: "Mistério",   	sub: "a verdade escondida diante dos olhos"	article: "um" },
+      { name: "Horror",    	sub: "o medo como espelho"			article: "um" },
+      { name: "Fábula",     	sub: "a lição disfarçada de história"		article: "uma" },
+      { name: "Suspense",  	sub: "cada segundo conta"			article: "um" },
+      { name: "Sátira",    	sub: "a forma mais afiada da verdade"		article: "uma" },
+      { name: "Épico",      	sub: "o mundo em jogo"				article: "um" },
     ]
   };
 
@@ -694,7 +694,7 @@
     setTimeout(function() {
       const prompt = character.name + ' enfrenta um momento onde ' +
                      situation.toLowerCase() + '. ' +
-                     'Conte isto como ' + genre.name.toLowerCase() + '.';
+                     'Conte isto como ' + genre.article() + ' ' + genre.name.toLowerCase() + '.';
       document.getElementById('resultPrompt').textContent = prompt;
       document.getElementById('resultBlock').style.display = 'block';
       btn.disabled = false;
