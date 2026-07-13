@@ -694,7 +694,7 @@
     setTimeout(function() {
       const prompt = character.name + ' enfrenta um momento onde ' +
                      situation.toLowerCase() + '. ' +
-                     'Conte isto como ' + genre.article() + ' ' + genre.name.toLowerCase() + '.';
+                     'Conte isto como ' + genre.article.toLowerCase() + ' ' + genre.name.toLowerCase() + '.';
       document.getElementById('resultPrompt').textContent = prompt;
       document.getElementById('resultBlock').style.display = 'block';
       btn.disabled = false;
