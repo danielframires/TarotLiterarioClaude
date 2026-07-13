@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tarô Literário</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep:       #0d0a0f;
+      --bg-mid:        #160e1a;
+      --bg-card:       #1c1224;
+      --gold:          #c9a84c;
+      --gold-light:    #e8c97a;
+      --gold-dim:      #7a5f28;
+      --ivory:         #f0e8d6;
+      --ivory-dim:     #a89880;
+      --persona:       #5c2a6e;
+      --persona-light: #9b59b6;
+      --conflict:      #1a3a4a;
+      --conflict-light:#2e86ab;
+      --genre:         #4a1a1a;
+      --genre-light:   #c0392b;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-deep);
+      color: var(--ivory);
+      font-family: 'EB Garamond', serif;
+      overflow-x: hidden;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, #2a1040 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, #1a0a0a 0%, transparent 50%),
+        var(--bg-deep);
+      min-height: 100vh;
+    }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .header-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1.1;
+      text-shadow: 0 0 60px rgba(201,168,76,0.3), 0 2px 4px rgba(0,0,0,0.8);
+      letter-spacing: 0.02em;
+    }
+
+    .header-sub {
+      margin-top: 16px;
+      font-size: 1.05rem;
+      color: var(--ivory-dim);
+      font-style: italic;
+      letter-spacing: 0.03em;
+    }
+
+    /* Ornamental divider */
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0;
+      width: 100%;
+      max-width: 500px;
+    }
+    .ornament-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+    .ornament-center {
+      color: var(--gold);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* CARDS AREA */
+    .cards-area {
+      display: flex;
+      gap: 28px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 8px 0 48px;
+      width: 100%;
+    }
+
+    /* CARD */
+    .card-wrapper {
+      perspective: 900px;
+      width: 220px;
+      height: 360px;
+      flex-shrink: 0;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.85s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+
+    .card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      overflow: hidden;
+    }
+
+    /* CARD BACK */
+    .card-back {
+      background: linear-gradient(145deg, #1e1428, #110c18);
+      border: 1px solid var(--gold-dim);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.7), inset 0 0 30px rgba(201,168,76,0.04);
+    }
+
+    .card-back::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .card-back-pattern {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* CARD FRONT */
+    .card-front {
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(201,168,76,0.25);
+      box-shadow: 0 8px 48px rgba(0,0,0,0.8), 0 0 80px rgba(0,0,0,0.4);
+    }
+
+    .card-front::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 7px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .card-front.persona-card {
+      background: linear-gradient(170deg, #1e0f2a 0%, #2a1040 40%, #1a0d22 100%);
+      border-color: rgba(155,89,182,0.4);
+    }
+    .card-front.conflict-card {
+      background: linear-gradient(170deg, #0a1a24 0%, #0f2a38 40%, #081520 100%);
+      border-color: rgba(46,134,171,0.4);
+    }
+    .card-front.genre-card {
+      background: linear-gradient(170deg, #1a0808 0%, #2e1010 40%, #160606 100%);
+      border-color: rgba(192,57,43,0.4);
+    }
+
+    .card-top-banner {
+      padding: 20px 18px 14px;
+      text-align: center;
+      position: relative;
+    }
+
+    .card-label {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .persona-card .card-label { color: var(--persona-light); }
+    .conflict-card .card-label { color: var(--conflict-light); }
+    .genre-card .card-label { color: var(--genre-light); }
+
+    .card-roman {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 28px;
+      color: var(--gold);
+      opacity: 0.5;
+      line-height: 1;
+    }
+
+    .card-illustration {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      position: relative;
+    }
+
+    .card-icon-circle {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .persona-card .card-icon-circle {
+      background: radial-gradient(circle, rgba(92,42,110,0.5) 0%, rgba(92,42,110,0.1) 70%);
+      box-shadow: 0 0 40px rgba(155,89,182,0.2);
+      border: 1px solid rgba(155,89,182,0.3);
+    }
+    .conflict-card .card-icon-circle {
+      background: radial-gradient(circle, rgba(26,58,74,0.5) 0%, rgba(26,58,74,0.1) 70%);
+      box-shadow: 0 0 40px rgba(46,134,171,0.2);
+      border: 1px solid rgba(46,134,171,0.3);
+    }
+    .genre-card .card-icon-circle {
+      background: radial-gradient(circle, rgba(74,26,26,0.5) 0%, rgba(74,26,26,0.1) 70%);
+      box-shadow: 0 0 40px rgba(192,57,43,0.2);
+      border: 1px solid rgba(192,57,43,0.3);
+    }
+
+    .card-bottom {
+      padding: 14px 18px 22px;
+      text-align: center;
+      border-top: 1px solid rgba(201,168,76,0.1);
+    }
+
+    .card-value {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
+      font-weight: 600;
+      color: var(--ivory);
+      line-height: 1.35;
+      letter-spacing: 0.02em;
+    }
+
+    .card-value-sub {
+      font-size: 0.75rem;
+      color: var(--ivory-dim);
+      font-style: italic;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* BUTTON */
+    .draw-btn {
+      position: relative;
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--bg-deep);
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, #a07828 100%);
+      border: none;
+      padding: 18px 56px;
+      border-radius: 4px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 24px rgba(201,168,76,0.35), 0 1px 0 rgba(255,255,255,0.2) inset;
+    }
+
+    .draw-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .draw-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 36px rgba(201,168,76,0.5), 0 1px 0 rgba(255,255,255,0.2) inset;
+    }
+
+    .draw-btn:active {
+      transform: translateY(0px);
+    }
+
+    .draw-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .draw-btn-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* RESULT MESSAGE */
+    .result-block {
+      margin-top: 36px;
+      text-align: center;
+      max-width: 680px;
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .result-prompt-label {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.4em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .result-prompt {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--ivory);
+      line-height: 1.7;
+      border-left: 2px solid var(--gold-dim);
+      padding-left: 20px;
+      text-align: left;
+    }
+
+    /* INITIAL STATE */
+    .initial-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      opacity: 0.5;
+    }
+    .initial-message p {
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--ivory-dim);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* Responsive */
+    @media (max-width: 720px) {
+      .cards-area { gap: 20px; }
+      .card-wrapper { width: 180px; height: 300px; }
+      .card-roman { font-size: 22px; }
+    }
+    @media (max-width: 480px) {
+      .cards-area { flex-direction: column; align-items: center; }
+      .card-wrapper { width: 220px; height: 340px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-eyebrow">Clube da Escrita - Est. MMXXVI</div>
+    <h1>Tarô Literário</h1>
+    <p class="header-sub">Draw three cards and let the fates compose your story</p>
+  </div>
+
+  <div class="ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-center">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2 L13.5 9 L20 9 L14.5 13.5 L16.5 20.5 L12 16.5 L7.5 20.5 L9.5 13.5 L4 9 L10.5 9 Z" fill="#c9a84c" opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="ornament-line"></div>
+  </div>
+
+  <!-- CARDS -->
+  <div class="cards-area" id="cardsArea">
+
+    <!-- CARD 1: A PERSONA -->
+    <div class="card-wrapper">
+      <div class="card-inner" id="card0">
+        <div class="card-face card-back">
+          <div class="card-back-pattern">
+            <svg width="140" height="200" viewBox="0 0 140 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="10" width="120" height="180" rx="4" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"/>
+              <rect x="20" y="20" width="100" height="160" rx="3" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <circle cx="70" cy="100" r="40" stroke="#c9a84c" stroke-width="0.5" opacity="0.25"/>
+              <circle cx="70" cy="100" r="28" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <line x1="30" y1="100" x2="110" y2="100" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <line x1="70" y1="60" x2="70" y2="140" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <path d="M70 62 L72 68 L78 68 L73 72 L75 78 L70 74 L65 78 L67 72 L62 68 L68 68 Z" fill="#c9a84c" opacity="0.35"/>
+              <text x="70" y="170" text-anchor="middle" font-family="Cinzel Decorative, serif" font-size="7" fill="#c9a84c" opacity="0.4">TARÔ LITERÁRIO</text>
+            </svg>
+          </div>
+        </div>
+        <div class="card-face card-front persona-card">
+          <div class="card-top-banner">
+            <div class="card-label">A Persona</div>
+            <div class="card-roman" id="roman0">I</div>
+          </div>
+          <div class="card-illustration">
+            <div class="card-icon-circle">
+              <svg id="icon0" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="28" cy="18" r="11" stroke="#9b59b6" stroke-width="1.5"/>
+                <path d="M8 52 C8 38 48 38 48 52" stroke="#9b59b6" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-value" id="val0">--</div>
+            <div class="card-value-sub" id="sub0">Personagem</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2: O CONFLITO -->
+    <div class="card-wrapper">
+      <div class="card-inner" id="card1">
+        <div class="card-face card-back">
+          <div class="card-back-pattern">
+            <svg width="140" height="200" viewBox="0 0 140 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="10" width="120" height="180" rx="4" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"/>
+              <rect x="20" y="20" width="100" height="160" rx="3" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <circle cx="70" cy="100" r="40" stroke="#c9a84c" stroke-width="0.5" opacity="0.25"/>
+              <circle cx="70" cy="100" r="28" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <line x1="30" y1="100" x2="110" y2="100" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <line x1="70" y1="60" x2="70" y2="140" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <path d="M70 62 L72 68 L78 68 L73 72 L75 78 L70 74 L65 78 L67 72 L62 68 L68 68 Z" fill="#c9a84c" opacity="0.35"/>
+              <text x="70" y="170" text-anchor="middle" font-family="Cinzel Decorative, serif" font-size="7" fill="#c9a84c" opacity="0.4">TARÔ LITERÁRIO</text>
+            </svg>
+          </div>
+        </div>
+        <div class="card-face card-front conflict-card">
+          <div class="card-top-banner">
+            <div class="card-label">O Conflito</div>
+            <div class="card-roman" id="roman1">II</div>
+          </div>
+          <div class="card-illustration">
+            <div class="card-icon-circle">
+              <svg id="icon1" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M28 8 L28 30" stroke="#2e86ab" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M16 20 L28 8 L40 20" stroke="#2e86ab" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M14 36 Q28 28 42 36 Q28 44 14 36Z" stroke="#2e86ab" stroke-width="1" fill="rgba(46,134,171,0.1)"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-value" id="val1">--</div>
+            <div class="card-value-sub" id="sub1">Situação</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3: O GÊNERO -->
+    <div class="card-wrapper">
+      <div class="card-inner" id="card2">
+        <div class="card-face card-back">
+          <div class="card-back-pattern">
+            <svg width="140" height="200" viewBox="0 0 140 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="10" width="120" height="180" rx="4" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"/>
+              <rect x="20" y="20" width="100" height="160" rx="3" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <circle cx="70" cy="100" r="40" stroke="#c9a84c" stroke-width="0.5" opacity="0.25"/>
+              <circle cx="70" cy="100" r="28" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <line x1="30" y1="100" x2="110" y2="100" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <line x1="70" y1="60" x2="70" y2="140" stroke="#c9a84c" stroke-width="0.5" opacity="0.2"/>
+              <path d="M70 62 L72 68 L78 68 L73 72 L75 78 L70 74 L65 78 L67 72 L62 68 L68 68 Z" fill="#c9a84c" opacity="0.35"/>
+              <text x="70" y="170" text-anchor="middle" font-family="Cinzel Decorative, serif" font-size="7" fill="#c9a84c" opacity="0.4">TARÔ LITERÁRIO</text>
+            </svg>
+          </div>
+        </div>
+        <div class="card-face card-front genre-card">
+          <div class="card-top-banner">
+            <div class="card-label">O Gênero</div>
+            <div class="card-roman" id="roman2">III</div>
+          </div>
+          <div class="card-illustration">
+            <div class="card-icon-circle">
+              <svg id="icon2" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 44 L12 16 Q12 12 16 12 L40 12 Q44 12 44 16 L44 44" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="18" y1="22" x2="38" y2="22" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
+                <line x1="18" y1="29" x2="38" y2="29" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
+                <line x1="18" y1="36" x2="30" y2="36" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-value" id="val2">--</div>
+            <div class="card-value-sub" id="sub2">Categoria</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cards-area -->
+
+  <!-- DRAW BUTTON -->
+  <button class="draw-btn" id="drawBtn" onclick="drawCards()">
+    <div class="draw-btn-inner">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 1 L9 6 L14 6 L10 9.5 L11.5 14.5 L8 11.5 L4.5 14.5 L6 9.5 L2 6 L7 6 Z" fill="#0d0a0f"/>
+      </svg>
+      Distribuir Cartas
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 1 L9 6 L14 6 L10 9.5 L11.5 14.5 L8 11.5 L4.5 14.5 L6 9.5 L2 6 L7 6 Z" fill="#0d0a0f"/>
+      </svg>
+    </div>
+  </button>
+
+  <!-- INITIAL / RESULT -->
+  <div class="initial-message" id="initialMsg">
+    <svg width="32" height="2" viewBox="0 0 32 2"><line x1="0" y1="1" x2="32" y2="1" stroke="#c9a84c" stroke-width="1" opacity="0.3"/></svg>
+    <p>Sua história aguarda a distribuição das cartas</p>
+  </div>
+
+  <div class="result-block" id="resultBlock" style="display:none;">
+    <div class="result-prompt-label">Sua Proposta de Escrita</div>
+    <div class="result-prompt" id="resultPrompt"></div>
+  </div>
+
+</div>
+
+<script>
+  const DATA = {
+    characters: [
+      { name: "O Bêbado",    		sub: "perdido na névoa mental" },
+      { name: "O Mago",        		sub: "portador das artes esquecidas" },
+      { name: "O Pedinte",      	sub: "invisível para o mundo" },
+      { name: "O Investidor",    	sub: "negociando futuros" },
+      { name: "A Princesa",    		sub: "aprisionada em seda e ouro" },
+      { name: "O Detetive",   		sub: "assombrado por casos passados" },
+      { name: "O Eremita",      	sub: "exilado por opção" },
+      { name: "O Bobo da Corte",      	sub: "o único que fala a verdade" },
+      { name: "A Viúva",       		sub: "carregando um luto pessoal" },
+      { name: "O Fora da Lei",      	sub: "caçado e livre" },
+      { name: "O Estudioso",     	sub: "afogando-se em conhecimento" },
+      { name: "O Soldado",     		sub: "sem uma guerra para lutar" },
+      { name: "O Oráculo",      	sub: "fadado a ser acreditado" },
+      { name: "O Mercador",    		sub: "vendendo coisas certas e erradas" },
+      { name: "A Criança",       	sub: "que vê o que os adultos não conseguem" },
+    ],
+    situations: [
+      "O carro deve ser parado",
+      "Não há dinheiro para o resgate",
+      "Um dragão está se aproximando",
+      "Os sentimentos devem ser valorizados",
+      "A carta nunca foi enviada",
+      "Alguém está nos seguindo", 
+      "O relógio parou", 
+      "Uma tempestade está chegando", 
+      "A porta não vai abrir", 
+      "O mapa está errado", 
+      "Alguém está mentindo", 
+      "O último trem partiu", 
+      "O segredo foi revelado", 
+      "O tempo está se esgotando", 
+      "O espelho mostra outra coisa", 
+      "A ponte desabou", 
+      "Um antigo inimigo retornou", 
+      "A chave não serve em nenhuma fechadura", 
+      "É possível ouvir vozes através das paredes", 
+      "O convite foi um erro",
+    ],
+    genres: [
+      { name: "Comédia",    	sub: "deixe a risada ser a arma" },
+      { name: "Tragédia",	sub: "a beleza encontrada na ruína" },
+      { name: "Distopia",  	sub: "um mundo virado do avesso" },
+      { name: "Romance",   	sub: "o mais antigo jogo de risco" },
+      { name: "Mistério",   	sub: "a verdade escondida diante dos olhos" },
+      { name: "Horror",    	sub: "o medo como espelho" },
+      { name: "Fábula",     	sub: "a lição disfarçada de história" },
+      { name: "Suspense",  	sub: "cada segundo conta" },
+      { name: "Sátira",    	sub: "a forma mais afiada da verdade" },
+      { name: "Épico",      	sub: "o mundo em jogo" },
+    ]
+  };
+
+  const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
+                 "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"];
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  let isAnimating = false;
+
+  function drawCards() {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    const btn = document.getElementById('drawBtn');
+    btn.disabled = true;
+
+    // Reset flips first
+    for (let i = 0; i < 3; i++) {
+      document.getElementById('card' + i).classList.remove('flipped');
+    }
+
+    document.getElementById('resultBlock').style.display = 'none';
+    document.getElementById('initialMsg').style.display = 'none';
+
+    // Pick random values
+    const character = pick(DATA.characters);
+    const situation = pick(DATA.situations);
+    const genre     = pick(DATA.genres);
+    const charRoman = ROMAN[Math.floor(Math.random() * 15)];
+    const sitRoman  = ROMAN[Math.floor(Math.random() * 20)];
+    const genRoman  = ROMAN[Math.floor(Math.random() * 10)];
+
+    // Set values
+    document.getElementById('val0').textContent  = character.name;
+    document.getElementById('sub0').textContent  = character.sub;
+    document.getElementById('roman0').textContent = charRoman;
+
+    document.getElementById('val1').textContent  = situation;
+    document.getElementById('sub1').textContent  = 'Situation';
+    document.getElementById('roman1').textContent = sitRoman;
+
+    document.getElementById('val2').textContent  = genre.name;
+    document.getElementById('sub2').textContent  = genre.sub;
+    document.getElementById('roman2').textContent = genRoman;
+
+    // Flip cards with stagger
+    const delays = [300, 800, 1300];
+    for (let i = 0; i < 3; i++) {
+      (function(idx, delay) {
+        setTimeout(function() {
+          document.getElementById('card' + idx).classList.add('flipped');
+        }, delay);
+      })(i, delays[i]);
+    }
+
+    // Show result after all flipped
+    setTimeout(function() {
+      const prompt = character.name + ' enfrenta um momento onde ' +
+                     situation.toLowerCase() + '. ' +
+                     'Conte isto como ' + genre.name.toLowerCase() + '.';
+      document.getElementById('resultPrompt').textContent = prompt;
+      document.getElementById('resultBlock').style.display = 'block';
+      btn.disabled = false;
+      btn.querySelector('.draw-btn-inner').childNodes[1].textContent = ' Distribuir Novamente ';
+      isAnimating = false;
+    }, 2200);
+  }
+</script>
+</body>
+</html>
